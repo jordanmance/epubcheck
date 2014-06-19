@@ -65,6 +65,7 @@ public class HandlerUtil {
 					Messages.INVALID_XML_VERSION + parser.getXMLVersion());
 			return true;
 		}
+
 		return false;
 	}
 }

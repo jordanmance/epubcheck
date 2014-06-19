@@ -131,5 +131,4 @@ public class DefaultReportImpl implements Report {
 			+ fixMessage(message));
     	}
     }
-
 }

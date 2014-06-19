@@ -32,6 +32,7 @@ import com.adobe.epubcheck.api.Report;
 import com.adobe.epubcheck.util.DateParser;
 import com.adobe.epubcheck.util.EPUBVersion;
 import com.adobe.epubcheck.util.FeatureEnum;
+import com.adobe.epubcheck.util.HandlerUtil;
 import com.adobe.epubcheck.util.InvalidDateException;
 import com.adobe.epubcheck.util.Messages;
 import com.adobe.epubcheck.util.PathUtil;
@@ -45,7 +46,10 @@ public class OPFHandler implements XMLHandler {
 
 	Hashtable<String, OPFItem> itemMapByPath = new Hashtable<String, OPFItem>();
 
-	// Hashtable encryptedItems;
+    boolean reportedUnsupportedXMLVersion;
+
+
+    // Hashtable encryptedItems;
 
 	XMLParser parser;
 
@@ -123,6 +127,7 @@ public class OPFHandler implements XMLHandler {
 		this.xrefChecker = xrefChecker;
 		this.parser = parser;
 		this.version = version;
+        reportedUnsupportedXMLVersion = false;
 	}
 
 	public boolean getOpf12PackageFile() {
@@ -193,7 +198,9 @@ public class OPFHandler implements XMLHandler {
 	}
 
 	public void startElement() {
-		
+        if (!reportedUnsupportedXMLVersion)
+            reportedUnsupportedXMLVersion = HandlerUtil.checkXMLVersion(parser);
+
 		boolean registerEntry = true;
 		XMLElement e = parser.getCurrentElement();
 		String ns = e.getNamespace();
@@ -232,7 +239,7 @@ public class OPFHandler implements XMLHandler {
 								matches("^[^:/?#]+://.*"))) {
 					try {
 						href = PathUtil.resolveRelativeReference(path, href,
-								null);
+                                null);
 					} catch (IllegalArgumentException ex) {
 						report.error(path, parser.getLineNumber(),
 								parser.getColumnNumber(), ex.getMessage());
